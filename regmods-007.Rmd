@@ -15,11 +15,7 @@ You work for Motor Trend, a magazine about the automobile industry. Looking at a
 
 ## Data
 
-The data source for this assignment comes from the **mtcars** dataset which is bundled with R.
-
-The dataset can be loaded into R by typing `r data(mtcars)`. The effect of this command is to load into the environment **mtcars**.
-
-The resulting dataset consists of **`r nrow(mtcars)`** rows, each row made up of **`r ncol(mtcars)`** colunms.
+The data source for this assignment comes from the **mtcars** dataset which is bundled with R. The dataset can be loaded into R by typing `r data(mtcars)`. The effect of this command is to load into the environment **mtcars**. The resulting dataset consists of **`r nrow(mtcars)`** rows, each row made up of **`r ncol(mtcars)`** columns.
 
 The columns making up this dataset are:
 
@@ -35,20 +31,13 @@ The columns making up this dataset are:
 10 gear	 Number of forward gears  
 11 carb	 Number of carburetors  
 
-The information provided here was sourced from the R documentation page. This, together with addition information can be called up by typing *?mtcars* at the R prompt. [Appendix A][apA] contains a detailed description.
-
-Below is a sample of data:
-
-```{r}
-tail(mtcars)
-```
-
+The information provided here was sourced from the R documentation page. This, together with addition information can be called up by typing *?mtcars* at the R prompt. A link to the online version of the page is available at (https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
 
 # Project Requirement
 
 The two columns we will be dealing with are *mpg* and *am*. The data type of these two properties are:
 
-* mpg    `{r class(mtcars$mpg)}'  
+* mpg    `{r class(mtcars$mpg)}'
 * am     `{r class(mtcars$am)}'
 
 *am* will be converted into a factor variable.
@@ -58,17 +47,17 @@ mtcars$am <- as.factor(mtcars$am)
 levels(mtcars$am) <-c("Automatic", "Manual")
 ```
 
-```{r}
+```{r echo=FALSE , fig.height=4}
 boxplot(mpg~am, data = mtcars,
         xlab = "Transmission Type",
         ylab = "mpg",
         main = "mpg by Transmission Type")
 ```
 
-The boxplot above examples the different transmission types with respect to the mpg. From this chart, it seems that manual transmission have a higher mpg than automatic transmissions. One could also not that neither have any outliers and the wiskers of the box plot are balanced.
+The boxplot above examples the different transmission types with respect to the mpg. From this chart, it seems that manual transmission have a higher mpg than automatic transmissions. One could also not that neither have any outliers and the whiskers of the box plot are balanced.
 
-```{r fig.height=8, echo=FALSE}
-par(mfrow=c(2,1))
+```{r fig.height=4, echo=FALSE}
+par(mfrow=c(1,2))
 bins <- seq(10, 35, by=2.5)
 hist(mtcars$mpg[mtcars$am == "Automatic"], breaks=bins, main="mpg for automatic vehicles", xlab="mpg", xlim=c(10, 35))
 
@@ -86,15 +75,15 @@ cars.Auto <- mtcars[mtcars$am == "Automatic",]
 cars.Man <- mtcars[mtcars$am == "Manual",]
 ```
 
-The average mpg for vehciles with automatic transmssion is **`r round(mean(cars.Auto$mpg),2)`**. The average mpg for vehciles with manual transmssion is **`r round(mean(cars.Man$mpg), 2)`**.
+The average mpg for vehicles with automatic transmission is **`r round(mean(cars.Auto$mpg),2)`**. The average mpg for vehicles with manual transmission is **`r round(mean(cars.Man$mpg), 2)`**.
 
 ```{r}
 t.test(cars.Auto$mpg, cars.Man$mpg)
 ```
 
-<span style="color:red; font-size:1.5em;">From the information presented in the Welch Two Sample t-test, it is clear that at a 95% confidence interval the difference between the mpg means of the automatic and petrol vehicles is always negative implying that manual will always be 3.21 mpg more efficient than automatic.</span>
+From the information presented in the Welch Two Sample t-test, it is clear that at a 95% confidence interval the difference between the mpg means of the automatic and petrol vehicles is always negative implying that manual will always be 3.21 mpg more efficient than automatic.
 
-<span style="color:red; font-size:1.5em;">From the information presented above, the *null hypothesis: true difference in means is equal to 0* will be rejected at the 99% confidence level.</span>
+From the information presented above, the *null hypothesis: true difference in means is equal to 0* will be rejected at the 99% confidence level.
 
 Even though the information shown above indicates that manual is more efficient than automatic, one needs to ensure that other factors are not confounding the results. For example, if automatic cars analysed here are heavier than manual ones than weight could be "upsetting" the results. Likewise if one category of vehicle have higher, hp or cylinder values this could be a factor and not the transmission.
 
@@ -120,27 +109,15 @@ In order to investigate further a multivariate regression analysis is performed.
 fit2 <- lm(mpg ~ ., data=mtcars)
 summary(fit2)
 
-fit.final <- step(fit2, trace=0)
-summary(fit.final)
+fit2.best <- step(fit2, trace=0)
+summary(fit2.best)
 ```
 
+From the information presented above we can conclude that manual transmission contributes 2.94 mpg over automatic. This is far less than the value reported using the linear regression of mpg given transmission on its own or the t-test and can be explained by the weight and 0.25 mile time that play an important role in overall mpg value.
 
-\pagebreak
-
-## Appendix A
-[apA]:
-```{r, echo = FALSE, results = "asis"}
-static_help <- function(pkg, topic, out, links = tools::findHTMLlinks()) {
-  pkgRdDB = tools:::fetchRdDB(file.path(find.package(pkg), 'help', pkg))
-  force(links)
-  tools::Rd2HTML(pkgRdDB[[topic]], out, package = pkg,
-                 Links = links, no_links = is.null(links))
-}
-tmp <- tempfile()
-static_help("datasets", "mtcars", tmp)
-out <- readLines(tmp)
-headfoot <- grep("body", out)
-cat(out[(headfoot[1] + 1):(headfoot[2] - 1)], sep = "\n")
+```{r fig.height=10, echo=FALSE}
+par(mfrow = c(4,1))
+plot(fit2.best)
+par(mfrow = c(1,1))
 ```
 
-A link to the online version of the page is available at (https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
