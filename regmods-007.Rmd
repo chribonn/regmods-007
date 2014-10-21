@@ -1,0 +1,40 @@
+---
+title: "Motor Trend Assignment"
+author: "Alan C Bonnici"
+date: "Tuesday, October 21, 2014"
+output: pdf_document
+---
+
+#Assignment
+
+You work for Motor Trend, a magazine about the automobile industry. Looking at a data set of a collection of cars, they are interested in exploring the relationship between a set of variables and miles per gallon (MPG) (outcome). They are particularly interested in the following two questions:
+
+* "Is an automatic or manual transmission better for MPG"
+* "Quantify the MPG difference between automatic and manual transmissions"
+
+
+## Data
+
+The data source for this assignment comes from the **mtcars** dataset which is bundled with R.
+
+The dataset can be loaded into R by typing `{r data(mtcars)}`. The effect of this command is to load into the environment **mtcars**.
+
+The resulting dataset consists of **`{r nrow(mtcar)}`** rows, each row made up of **`{r ncol(mtcar)}`** colunms.
+
+The columns making up this dataset are:
+
+1 mpg	 Miles/(US) gallon  
+2 cyl	 Number of cylinders  
+3 disp	 Displacement (cu.in.)  
+4 hp	 Gross horsepower  
+5 drat	 Rear axle ratio  
+6 wt	 Weight (lb/1000)  
+7 qsec	 1/4 mile time  
+8 vs	 V/S  
+9 am	 Transmission (0 = automatic, 1 = manual)  
+10 gear	 Number of forward gears  
+11 carb	 Number of carburetors  
+
+The information provided here was sourced from the R documentation page. This can be called up by typing *?mtcars* at the prompt. A link to the online version of the page is available at (https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
+
+
