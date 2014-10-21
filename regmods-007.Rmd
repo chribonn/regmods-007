@@ -17,13 +17,13 @@ You work for Motor Trend, a magazine about the automobile industry. Looking at a
 
 The data source for this assignment comes from the **mtcars** dataset which is bundled with R.
 
-The dataset can be loaded into R by typing `{r data(mtcars)}`. The effect of this command is to load into the environment **mtcars**.
+The dataset can be loaded into R by typing `r data(mtcars)`. The effect of this command is to load into the environment **mtcars**.
 
-The resulting dataset consists of **`{r nrow(mtcar)}`** rows, each row made up of **`{r ncol(mtcar)}`** colunms.
+The resulting dataset consists of **`r nrow(mtcars)`** rows, each row made up of **`r ncol(mtcars)`** colunms.
 
 The columns making up this dataset are:
 
-1 mpg	 Miles/(US) gallon  
+1 mpg     Miles/(US) gallon  
 2 cyl	 Number of cylinders  
 3 disp	 Displacement (cu.in.)  
 4 hp	 Gross horsepower  
@@ -35,7 +35,7 @@ The columns making up this dataset are:
 10 gear	 Number of forward gears  
 11 carb	 Number of carburetors  
 
-The information provided here was sourced from the R documentation page. This, together with addition information can be called up by typing *?mtcars* at the R prompt. A link to the online version of the page is available at (https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
+The information provided here was sourced from the R documentation page. This, together with addition information can be called up by typing *?mtcars* at the R prompt. [Appendix A][apA] contains a detailed description.
 
 Below is a sample of data:
 
@@ -44,7 +44,7 @@ tail(mtcars)
 ```
 
 
-# Project Requirement: **Is an automatic or manual transmission better for MPG**
+# Project Requirement
 
 The two columns we will be dealing with are *mpg* and *am*. The data type of these two properties are:
 
@@ -67,10 +67,80 @@ boxplot(mpg~am, data = mtcars,
 
 The boxplot above examples the different transmission types with respect to the mpg. From this chart, it seems that manual transmission have a higher mpg than automatic transmissions. One could also not that neither have any outliers and the wiskers of the box plot are balanced.
 
-```{r fig.align='center', echo=TRUE, fig.height=8}
+```{r fig.height=8, echo=FALSE}
 par(mfrow=c(2,1))
-hist(mtcars$mpg[mtcars$am=="Automatic"], breaks=12, main="mpg for automatic vehicles", xlab="mpg", xlim=c(10, 35))
-hist(mtcars$mpg[mtcars$am=="Manual"], breaks=12, main="mpg for manual vehicles", xlab="mpg", xlim=c(10,35))
+bins <- seq(10, 35, by=2.5)
+hist(mtcars$mpg[mtcars$am == "Automatic"], breaks=bins, main="mpg for automatic vehicles", xlab="mpg", xlim=c(10, 35))
+
+hist(mtcars$mpg[mtcars$am == "Manual"], breaks=bins, main="mpg for manual vehicles", xlab="mpg", xlim=c(10, 35))
 par(mfrow=c(1,1))
+
 ```
 
+The histogram above compares the mpg of the two types of transmissions.
+
+# Data Analaysis of mpg for automatic vs manual tranmssions
+
+```{r}
+cars.Auto <- mtcars[mtcars$am == "Automatic",]
+cars.Man <- mtcars[mtcars$am == "Manual",]
+```
+
+The average mpg for vehciles with automatic transmssion is **`r round(mean(cars.Auto$mpg),2)`**. The average mpg for vehciles with manual transmssion is **`r round(mean(cars.Man$mpg), 2)`**.
+
+```{r}
+t.test(cars.Auto$mpg, cars.Man$mpg)
+```
+
+<span style="color:red; font-size:1.5em;">From the information presented in the Welch Two Sample t-test, it is clear that at a 95% confidence interval the difference between the mpg means of the automatic and petrol vehicles is always negative implying that manual will always be 3.21 mpg more efficient than automatic.</span>
+
+<span style="color:red; font-size:1.5em;">From the information presented above, the *null hypothesis: true difference in means is equal to 0* will be rejected at the 99% confidence level.</span>
+
+Even though the information shown above indicates that manual is more efficient than automatic, one needs to ensure that other factors are not confounding the results. For example, if automatic cars analysed here are heavier than manual ones than weight could be "upsetting" the results. Likewise if one category of vehicle have higher, hp or cylinder values this could be a factor and not the transmission.
+
+A correlation analysis can help show the relationship of the various properties with respect to mpg shows that an increase in cylinders, displacement, hp, weight and number of carburetors all negativly impact mpg while rear axle ratio, 1/4 mile time and number of forward gears all contribute to higher mpgs.
+
+```{r}
+x <- head(cor(sapply(mtcars, as.numeric)),1)
+x <- x[, order(x)]
+x[-11]
+```
+
+In a simple regression analysis from mpg given transmission 
+```{r}
+fit <- lm(mpg ~ am, data = mtcars)
+summary(fit)
+```
+
+From the above data we can infer that, on average, manual transmission vehicle give 7.25 mpgs more than then automatic transmission. A value of R^2 of 35.98% means that the model does not explain all of the variance and further investigation is required.
+
+In order to investigate further a multivariate regression analysis is performed. In this case we adopt a stepwise linear regression. Stepwise regression is a semi-automated process of building a model by successively removing variables based solely on the t-statistics of their estimated coefficients. 
+
+```{r}
+fit2 <- lm(mpg ~ ., data=mtcars)
+summary(fit2)
+
+fit.final <- step(fit2, trace=0)
+summary(fit.final)
+```
+
+
+\pagebreak
+
+## Appendix A
+[apA]:
+```{r, echo = FALSE, results = "asis"}
+static_help <- function(pkg, topic, out, links = tools::findHTMLlinks()) {
+  pkgRdDB = tools:::fetchRdDB(file.path(find.package(pkg), 'help', pkg))
+  force(links)
+  tools::Rd2HTML(pkgRdDB[[topic]], out, package = pkg,
+                 Links = links, no_links = is.null(links))
+}
+tmp <- tempfile()
+static_help("datasets", "mtcars", tmp)
+out <- readLines(tmp)
+headfoot <- grep("body", out)
+cat(out[(headfoot[1] + 1):(headfoot[2] - 1)], sep = "\n")
+```
+
+A link to the online version of the page is available at (https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
