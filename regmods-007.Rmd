@@ -35,6 +35,42 @@ The columns making up this dataset are:
 10 gear	 Number of forward gears  
 11 carb	 Number of carburetors  
 
-The information provided here was sourced from the R documentation page. This can be called up by typing *?mtcars* at the prompt. A link to the online version of the page is available at (https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
+The information provided here was sourced from the R documentation page. This, together with addition information can be called up by typing *?mtcars* at the R prompt. A link to the online version of the page is available at (https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
 
+Below is a sample of data:
+
+```{r}
+tail(mtcars)
+```
+
+
+# Project Requirement: **Is an automatic or manual transmission better for MPG**
+
+The two columns we will be dealing with are *mpg* and *am*. The data type of these two properties are:
+
+* mpg    `{r class(mtcars$mpg)}'  
+* am     `{r class(mtcars$am)}'
+
+*am* will be converted into a factor variable.
+
+```{r}
+mtcars$am <- as.factor(mtcars$am)
+levels(mtcars$am) <-c("Automatic", "Manual")
+```
+
+```{r}
+boxplot(mpg~am, data = mtcars,
+        xlab = "Transmission Type",
+        ylab = "mpg",
+        main = "mpg by Transmission Type")
+```
+
+The boxplot above examples the different transmission types with respect to the mpg. From this chart, it seems that manual transmission have a higher mpg than automatic transmissions. One could also not that neither have any outliers and the wiskers of the box plot are balanced.
+
+```{r fig.align='center', echo=TRUE, fig.height=8}
+par(mfrow=c(2,1))
+hist(mtcars$mpg[mtcars$am=="Automatic"], breaks=12, main="mpg for automatic vehicles", xlab="mpg", xlim=c(10, 35))
+hist(mtcars$mpg[mtcars$am=="Manual"], breaks=12, main="mpg for manual vehicles", xlab="mpg", xlim=c(10,35))
+par(mfrow=c(1,1))
+```
 
